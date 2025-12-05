@@ -63,7 +63,7 @@ local dotAnimation = coroutine.create(function()
 			dotCount = 1
 		end
 		
-		wait(0.5) -- Change speed of animation here
+		wait(0.25) -- Change speed of animation here
 	end
 end)
 
@@ -428,26 +428,10 @@ local function loadSpeedKeybinds()
 end
 local function saveCustomAnimations()
     ensureakFolder()
-    local customToSave = {}
-    for animName, animId in pairs(customAnimations) do
-        customToSave[animName] = tostring(animId)
-    end
-    local success, encodedCustom = pcall(HttpService.JSONEncode, HttpService, customToSave)
-    if success then
-        local saveSuccess, errorMessage =
-            pcall(
-            function()
-                writefile("ak/custom_animations.json", encodedCustom)
-            end
-        )
-        if not saveSuccess then
-            warn("Error saving custom animations:", errorMessage)
-        elseif not hasCreatedCustomAnimationsFile then
-            hasCreatedCustomAnimationsFile = true
-        end
-    else
-        warn("Error encoding custom animations:", encodedCustom)
-    end
+coroutine.wrap(function()
+    writefile("ak/custom_animations.json", encodedCustom)
+end)()
+
 end
 local function loadCustomAnimations()
     ensureakFolder()
