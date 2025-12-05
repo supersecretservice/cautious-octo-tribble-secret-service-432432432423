@@ -426,11 +426,42 @@ local function loadSpeedKeybinds()
         -- warn("Speed keybind file not found or unreadable, using defaults.")
     end
 end
+
 local function saveCustomAnimations()
     ensureakFolder()
-coroutine.wrap(function()
-    writefile("ak/custom_animations.json", encodedCustom)
-end)()
+
+    local customToSave = {}
+
+    for animName, animId in pairs(customAnimations) do
+        customToSave[animName] = tostring(animId)
+    end
+
+    -- DEBUG PRINTS
+    print("---- DEBUG: customToSave ----")
+    for k, v in pairs(customToSave) do
+        print("Key:", k, "Type:", typeof(v), "Value:", v)
+    end
+
+    print("Total entries:", #customToSave)
+
+    -- TRY ENCODING
+    local success, encodedCustom = pcall(HttpService.JSONEncode, HttpService, customToSave)
+
+    print("JSON Encode success:", success)
+    print("JSON Encode result:", encodedCustom)
+
+    -- STOP IF JSON FAILED
+    if not success or not encodedCustom then
+        warn("JSON encode failed or result was nil:", encodedCustom)
+        return
+    end
+
+    -- WRITE SAFELY
+    coroutine.wrap(function()
+        writefile("ak/custom_animations.json", encodedCustom)
+    end)()
+end
+
 
 end
 local function loadCustomAnimations()
